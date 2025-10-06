@@ -87,6 +87,45 @@ export const lookupAuthMemberLiked = (
   };
 };
 
+interface lookupAuthMemberFollowed {
+  followerId: T;
+  followingId: string;
+}
+export const lookupAuthMemberFollowed = (input: lookupAuthMemberFollowed) => {
+  const { followerId, followingId } = input;
+  return {
+    $lookup: {
+      from: "follows",
+      let: {
+        localFollowersId: followerId,
+        localFollowingId: followingId,
+        localMyFavorite: true,
+      },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$followerId", "$$localFollowersId"] },
+                { $eq: ["$followingId", "$$localFollowingId"] },
+              ],
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            followerId: 1,
+            followingId: 1,
+            myFollowing: "$$localMyFavorite",
+          },
+        },
+      ],
+      as: "meFollowed",
+    },
+  };
+};
+
 export const lookupMember = {
   $lookup: {
     from: "members",
