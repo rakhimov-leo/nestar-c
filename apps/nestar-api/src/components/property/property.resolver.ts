@@ -96,7 +96,7 @@ export class PropertyResolver {
     @AuthMember("_id") memberId: ObjectId
   ): Promise<Properties> {
     console.log("Query: getAgentProperties");
-    return await this.propertyService.getFavorites(memberId, input);
+    return await this.propertyService.getAgentProperties(memberId, input);
   }
 
   @UseGuards(AuthGuard)
@@ -105,7 +105,7 @@ export class PropertyResolver {
     @Args("propertyId") input: string,
     @AuthMember("_id") memberId: ObjectId
   ): Promise<Property> {
-    console.log("Mutataion: likeTargetProperty");
+    console.log("Mutation: likeTargetProperty");
     const likeRefId = shapeIntoMongoObjectId(input);
     return await this.propertyService.likeTargetProperty(memberId, likeRefId);
   }
