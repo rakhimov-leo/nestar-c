@@ -8,6 +8,7 @@ import { UseGuards } from "@nestjs/common";
 import { Roles } from "../auth/decorators/roles.decorator";
 import {
   AllPropertiesInquiry,
+  OrdinaryInquiry,
   PropertiesInquiry,
   PropertyInput,
 } from "../../libs/dto/property/property.input";
@@ -67,6 +68,16 @@ export class PropertyResolver {
     return await this.propertyService.getProperties(memberId, input);
   }
 
+  @UseGuards(AuthGuard)
+  @Query((returns) => Properties)
+  public async getFavorites(
+    @Args("input") input: OrdinaryInquiry,
+    @AuthMember("_id") memberId: ObjectId
+  ): Promise<Properties> {
+    console.log("Query: getFavorites");
+    return await this.propertyService.getFavorites(memberId, input);
+  }
+
   @Roles(MemberType.AGENT)
   @UseGuards(RolesGuard)
   @Query((returns) => Properties)
@@ -75,7 +86,7 @@ export class PropertyResolver {
     @AuthMember("_id") memberId: ObjectId
   ): Promise<Properties> {
     console.log("Query: getAgentProperties");
-    return await this.propertyService.getAgentProperties(memberId, input);
+    return await this.propertyService.getFavorites(memberId, input);
   }
 
   @UseGuards(AuthGuard)
